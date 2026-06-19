@@ -2,6 +2,8 @@
 
 An enterprise-grade task and project management system built with **Node.js**, **Express**, **Prisma ORM**, and **PostgreSQL (Neon)**. Features a complete REST API with JWT authentication, role-based access control, real-time WebSocket updates, interactive Kanban boards, and a built-in premium dark-themed web dashboard.
 
+**Live Demo (Render):** [https://task-management-api-xxiu.onrender.com](https://task-management-api-xxiu.onrender.com)
+
 Designed with a **resilient architecture** — runs fully locally without Docker by using seamless in-memory and local disk fallbacks for Redis, MinIO, and MongoDB.
 
 ---
