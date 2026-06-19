@@ -27,74 +27,62 @@
   <!-- ─── AUTHENTICATION SCREEN ───────────────────────────────────────────── -->
   <div id="auth-screen" class="screen active">
     <div class="auth-container">
-      <div class="auth-visual-panel">
-        <div class="brand-info">
-          <div class="logo-large">
-            <i data-lucide="layers" class="logo-icon-large"></i>
+      <div class="auth-card">
+        <div class="auth-header">
+          <div class="logo">
+            <i data-lucide="layers" class="logo-icon"></i>
             <span>TaskFlow</span>
           </div>
-          <h1>Streamline Your Enterprise Sprints</h1>
-          <p>Experience real-time task management with state-of-the-art collaborative workspaces, activity logs, and granular project tracking.</p>
+          <h2 id="auth-title">Welcome Back</h2>
+          <p id="auth-subtitle">Login to access your enterprise dashboard</p>
         </div>
-      </div>
-      <div class="auth-form-panel">
-        <div class="auth-card">
-          <div class="auth-header">
-            <div class="logo">
-              <i data-lucide="layers" class="logo-icon"></i>
-              <span>TaskFlow</span>
+        
+        <form id="auth-form">
+          <div class="form-group" id="name-group" style="display: none;">
+            <label for="auth-name">Full Name</label>
+            <div class="input-wrapper">
+              <i data-lucide="user"></i>
+              <input type="text" id="auth-name" placeholder="John Doe">
             </div>
-            <h2 id="auth-title">Welcome Back</h2>
-            <p id="auth-subtitle">Login to access your enterprise dashboard</p>
           </div>
-          
-          <form id="auth-form">
-            <div class="form-group" id="name-group" style="display: none;">
-              <label for="auth-name">Full Name</label>
-              <div class="input-wrapper">
-                <i data-lucide="user"></i>
-                <input type="text" id="auth-name" placeholder="John Doe">
-              </div>
-            </div>
 
-            <div class="form-group" id="role-group" style="display: none;">
-              <label for="auth-role">Global Role</label>
-              <div class="input-wrapper">
-                <i data-lucide="shield" style="position: absolute; left: 1rem; color: var(--text-muted); width: 18px; height: 18px; pointer-events: none;"></i>
-                <select id="auth-role" style="padding-left: 2.75rem;">
-                  <option value="DEVELOPER" selected>DEVELOPER</option>
-                  <option value="PROJECT_MANAGER">PROJECT MANAGER</option>
-                  <option value="SYSTEM_ADMIN">SYSTEM ADMIN</option>
-                  <option value="VIEWER">VIEWER</option>
-                </select>
-              </div>
+          <div class="form-group" id="role-group" style="display: none;">
+            <label for="auth-role">Global Role</label>
+            <div class="input-wrapper">
+              <i data-lucide="shield" style="position: absolute; left: 1rem; color: var(--text-muted); width: 18px; height: 18px; pointer-events: none;"></i>
+              <select id="auth-role" style="padding-left: 2.75rem;">
+                <option value="DEVELOPER" selected>DEVELOPER</option>
+                <option value="PROJECT_MANAGER">PROJECT MANAGER</option>
+                <option value="SYSTEM_ADMIN">SYSTEM ADMIN</option>
+                <option value="VIEWER">VIEWER</option>
+              </select>
             </div>
-            
-            <div class="form-group">
-              <label for="auth-email">Email Address</label>
-              <div class="input-wrapper">
-                <i data-lucide="mail"></i>
-                <input type="email" id="auth-email" placeholder="you@company.com" required>
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <label for="auth-password">Password</label>
-              <div class="input-wrapper">
-                <i data-lucide="lock"></i>
-                <input type="password" id="auth-password" placeholder="••••••••" required>
-              </div>
-            </div>
-            
-            <button type="submit" class="btn btn-primary btn-block" id="auth-submit-btn">
-              <span>Login</span>
-              <i data-lucide="arrow-right"></i>
-            </button>
-          </form>
-          
-          <div class="auth-footer">
-            <p id="auth-toggle-text">Don't have an account? <a href="#" id="auth-toggle-link">Sign up</a></p>
           </div>
+          
+          <div class="form-group">
+            <label for="auth-email">Email Address</label>
+            <div class="input-wrapper">
+              <i data-lucide="mail"></i>
+              <input type="email" id="auth-email" placeholder="you@company.com" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="auth-password">Password</label>
+            <div class="input-wrapper">
+              <i data-lucide="lock"></i>
+              <input type="password" id="auth-password" placeholder="••••••••" required>
+            </div>
+          </div>
+          
+          <button type="submit" class="btn btn-primary btn-block" id="auth-submit-btn">
+            <span>Login</span>
+            <i data-lucide="arrow-right"></i>
+          </button>
+        </form>
+        
+        <div class="auth-footer">
+          <p id="auth-toggle-text">Don't have an account? <a href="#" id="auth-toggle-link">Sign up</a></p>
         </div>
       </div>
     </div>
