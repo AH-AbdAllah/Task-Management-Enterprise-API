@@ -47,31 +47,41 @@ async function fetchAPI(endpoint, options = {}) {
 
   const res = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
   
-  // If accessToken is expired (401), try to refresh it
-  if (res.status === 401 && state.refreshToken && !options.isRetry) {
-    console.log('[Auth] Token expired. Attempting refresh...');
-    const refreshRes = await fetch(`${API_BASE}/auth/refresh`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refreshToken: state.refreshToken })
-    });
+  // If accessToken is expired or invalid (401 or 403), try to refresh it
+  if ((res.status === 401 || res.status === 403) && state.refreshToken && !options.isRetry) {
+    console.log('[Auth] Token expired or invalid. Attempting refresh...');
+    try {
+      const refreshRes = await fetch(`${API_BASE}/auth/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refreshToken: state.refreshToken })
+      });
 
-    if (refreshRes.ok) {
-      const data = await refreshRes.json();
-      state.accessToken = data.accessToken;
-      state.refreshToken = data.refreshToken;
-      localStorage.setItem('accessToken', data.accessToken);
-      localStorage.setItem('refreshToken', data.refreshToken);
-      
-      console.log('[Auth] Token refreshed successfully.');
-      // Retry the original request
-      return fetchAPI(endpoint, { ...options, isRetry: true });
-    } else {
-      // Refresh token failed -> Force Logout
-      console.warn('[Auth] Refresh token failed. Logging out...');
+      if (refreshRes.ok) {
+        const data = await refreshRes.json();
+        state.accessToken = data.accessToken;
+        state.refreshToken = data.refreshToken;
+        localStorage.setItem('accessToken', data.accessToken);
+        localStorage.setItem('refreshToken', data.refreshToken);
+        
+        console.log('[Auth] Token refreshed successfully.');
+        // Retry the original request
+        return fetchAPI(endpoint, { ...options, isRetry: true });
+      } else {
+        // Refresh token failed -> Force Logout
+        console.warn('[Auth] Refresh token failed. Logging out...');
+        logout();
+        throw new Error('Session expired. Please log in again.');
+      }
+    } catch (err) {
+      console.warn('[Auth] Refresh token exception. Logging out...', err);
       logout();
-      throw new Error('Session expired. Please log in again.');
+      throw err;
     }
+  } else if (res.status === 401 || res.status === 403) {
+    // If no refresh token is present, or this is a failed retry, force logout
+    console.warn('[Auth] Unauthorized/Forbidden response. Logging out...');
+    logout();
   }
 
   if (!res.ok) {
