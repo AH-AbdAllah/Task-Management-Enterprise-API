@@ -1,0 +1,302 @@
+### Configuration
+@baseUrl = http://localhost:4000/api/v1
+@accessToken = {{login.response.body.accessToken}}
+@refreshToken = {{login.response.body.refreshToken}}
+
+# =============================================================
+# 1. AUTHENTICATION
+# =============================================================
+
+### Signup (Developer)
+# @name signup
+POST {{baseUrl}}/auth/signup
+Content-Type: application/json
+
+{
+  "email": "dev@enterprise.com",
+  "password": "securepassword123",
+  "name": "Alex Dev",
+  "role": "PROJECT_MANAGER"
+}
+
+### Login → returns accessToken (15min) + refreshToken (7d)
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "dev@enterprise.com",
+  "password": "securepassword123"
+}
+
+### Refresh Access Token (using refresh token)
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "PASTE_REFRESH_TOKEN_HERE"
+}
+
+### Logout (invalidate refresh token)
+POST {{baseUrl}}/auth/logout
+Content-Type: application/json
+
+{
+  "refreshToken": "PASTE_REFRESH_TOKEN_HERE"
+}
+
+
+# =============================================================
+# 2. TEAMS
+# =============================================================
+
+### Create Team
+# @name createTeam
+POST {{baseUrl}}/teams
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Core Engineering"
+}
+
+@teamId = {{createTeam.response.body.team.id}}
+
+### My Teams
+GET {{baseUrl}}/teams/my
+Authorization: Bearer {{accessToken}}
+
+### Add Member to Team
+POST {{baseUrl}}/teams/{{teamId}}/members
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "userId": "PASTE_MEMBER_USER_ID_HERE",
+  "role": "MEMBER"
+}
+
+### Team Members
+GET {{baseUrl}}/teams/{{teamId}}/members
+Authorization: Bearer {{accessToken}}
+
+
+# =============================================================
+# 3. PROJECTS
+# =============================================================
+
+### Create Project
+# @name createProject
+POST {{baseUrl}}/projects
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Jira 2.0 Core",
+  "description": "Enterprise task management platform",
+  "teamId": "{{teamId}}"
+}
+
+@projectId = {{createProject.response.body.project.id}}
+
+### My Projects
+GET {{baseUrl}}/projects
+Authorization: Bearer {{accessToken}}
+
+### Project Details
+GET {{baseUrl}}/projects/{{projectId}}
+Authorization: Bearer {{accessToken}}
+
+### Activity Timeline (MongoDB audit trail)
+GET {{baseUrl}}/projects/{{projectId}}/timeline?limit=20&skip=0
+Authorization: Bearer {{accessToken}}
+
+### Analytics Dashboard (Completion Rate, Velocity, Overdue Rate...)
+GET {{baseUrl}}/projects/{{projectId}}/analytics
+Authorization: Bearer {{accessToken}}
+
+
+# =============================================================
+# 4. BOARDS & COLUMNS
+# =============================================================
+
+### Create Board
+# @name createBoard
+POST {{baseUrl}}/boards
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Sprint 1 Board",
+  "projectId": "{{projectId}}"
+}
+
+@boardId = {{createBoard.response.body.board.id}}
+
+### Project Boards (Redis cached)
+GET {{baseUrl}}/boards/project/{{projectId}}
+Authorization: Bearer {{accessToken}}
+
+### Create Column: To Do
+# @name colTodo
+POST {{baseUrl}}/boards/columns
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "To Do",
+  "boardId": "{{boardId}}",
+  "position": 0
+}
+
+@colTodoId = {{colTodo.response.body.column.id}}
+
+### Create Column: In Progress
+# @name colInProgress
+POST {{baseUrl}}/boards/columns
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "In Progress",
+  "boardId": "{{boardId}}",
+  "position": 1
+}
+
+@colInProgressId = {{colInProgress.response.body.column.id}}
+
+### Create Column: Done
+# @name colDone
+POST {{baseUrl}}/boards/columns
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Done",
+  "boardId": "{{boardId}}",
+  "position": 2
+}
+
+### Board Columns with Tasks (Redis cached)
+GET {{baseUrl}}/boards/{{boardId}}/columns
+Authorization: Bearer {{accessToken}}
+
+### Reorder Columns
+PUT {{baseUrl}}/boards/{{boardId}}/columns/reorder
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "columnOrders": [
+    { "columnId": "{{colTodoId}}", "position": 0 },
+    { "columnId": "{{colInProgressId}}", "position": 1 }
+  ]
+}
+
+
+# =============================================================
+# 5. TASKS
+# =============================================================
+
+### Create Task (with priority + due date)
+# @name createTask
+POST {{baseUrl}}/tasks
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "Implement JWT Refresh Token Flow",
+  "description": "Rotate refresh tokens on each use, persist to PostgreSQL",
+  "columnId": "{{colTodoId}}",
+  "priority": "URGENT",
+  "dueDate": "2026-07-15T12:00:00.000Z"
+}
+
+@taskId = {{createTask.response.body.task.id}}
+
+### Update Task
+PUT {{baseUrl}}/tasks/{{taskId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "priority": "HIGH",
+  "description": "Updated description with more details"
+}
+
+### Move Task to In Progress Column
+PATCH {{baseUrl}}/tasks/{{taskId}}/move
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "columnId": "{{colInProgressId}}"
+}
+
+### Delete Task
+DELETE {{baseUrl}}/tasks/{{taskId}}
+Authorization: Bearer {{accessToken}}
+
+### Upload Attachment to Task (MinIO)
+# Use Postman or REST Client with file picker for multipart/form-data
+# Key: "file"  Type: File
+POST {{baseUrl}}/tasks/{{taskId}}/attachments
+Authorization: Bearer {{accessToken}}
+Content-Type: multipart/form-data; boundary=----FormBoundary
+
+------FormBoundary
+Content-Disposition: form-data; name="file"; filename="spec.pdf"
+Content-Type: application/pdf
+
+< ./spec.pdf
+------FormBoundary--
+
+
+# =============================================================
+# 6. COMMENTS
+# =============================================================
+
+### Add Comment to Task
+# @name addComment
+POST {{baseUrl}}/tasks/{{taskId}}/comments
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "content": "This should be completed before the end of Sprint 1. Priority is URGENT."
+}
+
+@commentId = {{addComment.response.body.comment.id}}
+
+### Get Task Comments
+GET {{baseUrl}}/tasks/{{taskId}}/comments
+Authorization: Bearer {{accessToken}}
+
+### Delete Comment
+DELETE {{baseUrl}}/comments/{{commentId}}
+Authorization: Bearer {{accessToken}}
+
+
+# =============================================================
+# 7. NOTIFICATIONS
+# =============================================================
+
+### My Notifications (includes unread count)
+GET {{baseUrl}}/notifications
+Authorization: Bearer {{accessToken}}
+
+### Mark Notification as Read
+PATCH {{baseUrl}}/notifications/NOTIFICATION_ID_HERE/read
+Authorization: Bearer {{accessToken}}
+
+### Mark All Notifications as Read
+PATCH {{baseUrl}}/notifications/read-all
+Authorization: Bearer {{accessToken}}
+
+
+# =============================================================
+# 8. HEALTH CHECK
+# =============================================================
+
+### Server Health
+GET http://localhost:4000/health
