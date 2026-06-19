@@ -7,7 +7,7 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Socket.IO Client -->
@@ -17,65 +17,84 @@
 </head>
 <body class="dark-mode">
 
+  <!-- Animated Aurora Background Blobs -->
+  <div class="aurora-bg">
+    <div class="aurora-blob aurora-blob-1"></div>
+    <div class="aurora-blob aurora-blob-2"></div>
+    <div class="aurora-blob aurora-blob-3"></div>
+  </div>
+
   <!-- ─── AUTHENTICATION SCREEN ───────────────────────────────────────────── -->
   <div id="auth-screen" class="screen active">
     <div class="auth-container">
-      <div class="auth-card">
-        <div class="auth-header">
-          <div class="logo">
-            <i data-lucide="layers" class="logo-icon"></i>
+      <div class="auth-visual-panel">
+        <div class="brand-info">
+          <div class="logo-large">
+            <i data-lucide="layers" class="logo-icon-large"></i>
             <span>TaskFlow</span>
           </div>
-          <h2 id="auth-title">Welcome Back</h2>
-          <p id="auth-subtitle">Login to access your enterprise dashboard</p>
+          <h1>Streamline Your Enterprise Sprints</h1>
+          <p>Experience real-time task management with state-of-the-art collaborative workspaces, activity logs, and granular project tracking.</p>
         </div>
-        
-        <form id="auth-form">
-          <div class="form-group" id="name-group" style="display: none;">
-            <label for="auth-name">Full Name</label>
-            <div class="input-wrapper">
-              <i data-lucide="user"></i>
-              <input type="text" id="auth-name" placeholder="John Doe">
+      </div>
+      <div class="auth-form-panel">
+        <div class="auth-card">
+          <div class="auth-header">
+            <div class="logo">
+              <i data-lucide="layers" class="logo-icon"></i>
+              <span>TaskFlow</span>
             </div>
+            <h2 id="auth-title">Welcome Back</h2>
+            <p id="auth-subtitle">Login to access your enterprise dashboard</p>
           </div>
+          
+          <form id="auth-form">
+            <div class="form-group" id="name-group" style="display: none;">
+              <label for="auth-name">Full Name</label>
+              <div class="input-wrapper">
+                <i data-lucide="user"></i>
+                <input type="text" id="auth-name" placeholder="John Doe">
+              </div>
+            </div>
 
-          <div class="form-group" id="role-group" style="display: none;">
-            <label for="auth-role">Global Role</label>
-            <div class="input-wrapper">
-              <i data-lucide="shield" style="position: absolute; left: 1rem; color: var(--text-muted); width: 18px; height: 18px; pointer-events: none;"></i>
-              <select id="auth-role" style="padding-left: 2.75rem;">
-                <option value="DEVELOPER" selected>DEVELOPER</option>
-                <option value="PROJECT_MANAGER">PROJECT MANAGER</option>
-                <option value="SYSTEM_ADMIN">SYSTEM ADMIN</option>
-                <option value="VIEWER">VIEWER</option>
-              </select>
+            <div class="form-group" id="role-group" style="display: none;">
+              <label for="auth-role">Global Role</label>
+              <div class="input-wrapper">
+                <i data-lucide="shield" style="position: absolute; left: 1rem; color: var(--text-muted); width: 18px; height: 18px; pointer-events: none;"></i>
+                <select id="auth-role" style="padding-left: 2.75rem;">
+                  <option value="DEVELOPER" selected>DEVELOPER</option>
+                  <option value="PROJECT_MANAGER">PROJECT MANAGER</option>
+                  <option value="SYSTEM_ADMIN">SYSTEM ADMIN</option>
+                  <option value="VIEWER">VIEWER</option>
+                </select>
+              </div>
             </div>
-          </div>
-          
-          <div class="form-group">
-            <label for="auth-email">Email Address</label>
-            <div class="input-wrapper">
-              <i data-lucide="mail"></i>
-              <input type="email" id="auth-email" placeholder="you@company.com" required>
+            
+            <div class="form-group">
+              <label for="auth-email">Email Address</label>
+              <div class="input-wrapper">
+                <i data-lucide="mail"></i>
+                <input type="email" id="auth-email" placeholder="you@company.com" required>
+              </div>
             </div>
-          </div>
-          
-          <div class="form-group">
-            <label for="auth-password">Password</label>
-            <div class="input-wrapper">
-              <i data-lucide="lock"></i>
-              <input type="password" id="auth-password" placeholder="••••••••" required>
+            
+            <div class="form-group">
+              <label for="auth-password">Password</label>
+              <div class="input-wrapper">
+                <i data-lucide="lock"></i>
+                <input type="password" id="auth-password" placeholder="••••••••" required>
+              </div>
             </div>
-          </div>
+            
+            <button type="submit" class="btn btn-primary btn-block" id="auth-submit-btn">
+              <span>Login</span>
+              <i data-lucide="arrow-right"></i>
+            </button>
+          </form>
           
-          <button type="submit" class="btn btn-primary btn-block" id="auth-submit-btn">
-            <span>Login</span>
-            <i data-lucide="arrow-right"></i>
-          </button>
-        </form>
-        
-        <div class="auth-footer">
-          <p id="auth-toggle-text">Don't have an account? <a href="#" id="auth-toggle-link">Sign up</a></p>
+          <div class="auth-footer">
+            <p id="auth-toggle-text">Don't have an account? <a href="#" id="auth-toggle-link">Sign up</a></p>
+          </div>
         </div>
       </div>
     </div>
@@ -286,11 +305,11 @@
         </div>
       </section>
 
-      <!-- ─── SCREEN 4: TIMELINE (MongoDB Audit trail) ─────────────────────── -->
+      <!-- ─── SCREEN 4: TIMELINE (PostgreSQL Audit trail) ─────────────────── -->
       <section id="timeline-screen" class="app-screen">
         <div class="screen-header">
           <h2>Activity Feed & Audit logs</h2>
-          <p class="subtitle">MongoDB real-time event logging system</p>
+          <p class="subtitle">PostgreSQL real-time event logging system</p>
         </div>
         
         <div class="glass-card">

@@ -599,7 +599,7 @@ function switchToProject(teamId, projectId) {
   });
 }
 
-// ─── TIMELINE SCREEN RENDERING (MongoDB) ─────────────────────────────────────
+// ─── TIMELINE SCREEN RENDERING (PostgreSQL) ──────────────────────────────────
 async function loadProjectTimeline(projectId) {
   const container = document.getElementById('timeline-feed');
   container.innerHTML = '<div class="loading">Loading audit records...</div>';
@@ -667,19 +667,19 @@ async function loadProjectAnalytics(projectId) {
     container.innerHTML = `
       <div class="analytics-dashboard-grid">
         <div class="stat-card">
-          <div class="stat-value">${stats.totalTasks}</div>
+          <div class="stat-value" id="stat-total-tasks">0</div>
           <div class="stat-label">Total Tasks</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value">${stats.completedTasks}</div>
+          <div class="stat-value" id="stat-completed-tasks">0</div>
           <div class="stat-label">Completed</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value">${stats.completionRate}</div>
+          <div class="stat-value" id="stat-completion-rate">0%</div>
           <div class="stat-label">Completion Rate</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value text-danger">${stats.overdueRate}</div>
+          <div class="stat-value text-danger" id="stat-overdue-rate">0%</div>
           <div class="stat-label">Overdue Rate</div>
         </div>
       </div>
@@ -699,6 +699,17 @@ async function loadProjectAnalytics(projectId) {
         </div>
       </div>
     `;
+
+    // Animate stats values
+    const totalVal = stats.totalTasks || 0;
+    const completedVal = stats.completedTasks || 0;
+    const completionRateVal = parseInt(stats.completionRate) || 0;
+    const overdueRateVal = parseInt(stats.overdueRate) || 0;
+
+    animateCountUp('stat-total-tasks', totalVal);
+    animateCountUp('stat-completed-tasks', completedVal);
+    animateCountUp('stat-completion-rate', completionRateVal, '%');
+    animateCountUp('stat-overdue-rate', overdueRateVal, '%');
   } catch (err) {
     container.innerHTML = `<div class="text-danger">Failed to load analytics: ${err.message}</div>`;
   }
@@ -1172,6 +1183,27 @@ function toggleAuthMode(signupMode) {
 }
 
 // ─── UTILITIES ──────────────────────────────────────────────────────────────
+function animateCountUp(elementId, endValue, suffix = '', duration = 1200) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  
+  let startTimestamp = null;
+  const step = (timestamp) => {
+    if (!startTimestamp) startTimestamp = timestamp;
+    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+    // Easing function (easeOutQuad)
+    const easedProgress = progress * (2 - progress);
+    const current = Math.floor(easedProgress * endValue);
+    el.innerText = `${current}${suffix}`;
+    if (progress < 1) {
+      window.requestAnimationFrame(step);
+    } else {
+      el.innerText = `${endValue}${suffix}`;
+    }
+  };
+  window.requestAnimationFrame(step);
+}
+
 function escapeHTML(str) {
   if (!str) return '';
   return str.replace(/[&<>'"]/g, 

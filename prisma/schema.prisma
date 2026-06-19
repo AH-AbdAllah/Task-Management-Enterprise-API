@@ -57,6 +57,8 @@ model User {
   refreshTokens  RefreshToken[]
   comments       Comment[]
   notifications  Notification[]
+
+  @@map("users")
 }
 
 model RefreshToken {
@@ -67,6 +69,8 @@ model RefreshToken {
   createdAt DateTime @default(now())
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
 }
 
 model Team {
@@ -77,6 +81,8 @@ model Team {
 
   members   TeamMember[]
   projects  Project[]
+
+  @@map("teams")
 }
 
 model TeamMember {
@@ -91,6 +97,7 @@ model TeamMember {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([teamId, userId])
+  @@map("team_members")
 }
 
 model Project {
@@ -103,6 +110,8 @@ model Project {
 
   team        Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
   boards      Board[]
+
+  @@map("projects")
 }
 
 model Board {
@@ -114,6 +123,8 @@ model Board {
 
   project   Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
   columns   BoardColumn[]
+
+  @@map("boards")
 }
 
 model BoardColumn {
@@ -126,6 +137,8 @@ model BoardColumn {
 
   board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
   tasks     Task[]
+
+  @@map("board_columns")
 }
 
 model Task {
@@ -145,6 +158,8 @@ model Task {
   creator     User         @relation("TaskCreator", fields: [creatorId], references: [id], onDelete: Cascade)
   attachments Attachment[]
   comments    Comment[]
+
+  @@map("tasks")
 }
 
 model Attachment {
@@ -160,6 +175,8 @@ model Attachment {
 
   task         Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
   uploadedBy   User     @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
+
+  @@map("attachments")
 }
 
 model Comment {
@@ -172,6 +189,8 @@ model Comment {
 
   task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("comments")
 }
 
 model Notification {
@@ -185,6 +204,8 @@ model Notification {
   createdAt DateTime         @default(now())
 
   user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
 }
 
 model ActivityLog {
@@ -202,4 +223,6 @@ model ActivityLog {
   details     Json     @default("{}")
   ipAddress   String?
   timestamp   DateTime @default(now())
+
+  @@map("activity_logs")
 }
